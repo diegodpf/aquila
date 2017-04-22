@@ -21,7 +21,7 @@
     <div class="row purple darken-4" style="margin-bottom: 0;">
         <div class="col s12">
             <ul class="tabs purple darken-4">
-                <li class="tab col s4"><a href="#hist"><i class=" material-icons white-text" style="line-height: 48px;">list</i></a></li>
+                <li class="tab col s4"><a href="#hist"><i class=" material-icons white-text" style="line-height: 48px;">today</i></a></li>
                 <li class="tab col s4"><a class="active" href="#mapWrapper"><img src="/resources/img/logo.png" style="margin-top:10px;"></a></li>
                 <li class="tab col s4"><a href="#config"><i class="material-icons white-text" style="line-height: 48px;">settings</i></a></li>
             </ul>

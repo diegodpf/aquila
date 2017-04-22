@@ -5,6 +5,7 @@ import com.motom.aquila.models.Vigilante;
 import com.motom.aquila.services.contracts.VigilanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -55,12 +56,52 @@ public class VigilanteController {
         add(new Localizacao("-25.408152", "-49.264290"));
     }};
 
-    private Localizacao setLocalizacao(Vigilante vigilante) {
-        int indice = localizacoesB.indexOf(vigilante.getLocalizacao()) + 1;
+    private List<Localizacao> localizacoesC = new ArrayList<Localizacao>() {{
+        add(new Localizacao("-25.410845", "-49.263984"));
+        add(new Localizacao("-25.410922", "-49.263512"));
+        add(new Localizacao("-25.411029", "-49.262946"));
+        add(new Localizacao("-25.411107", "-49.262431"));
+        add(new Localizacao("-25.411189", "-49.262023"));
+        add(new Localizacao("-25.411267", "-49.261605"));
+        add(new Localizacao("-25.411548", "-49.261680"));
+        add(new Localizacao("-25.412008", "-49.261793"));
+        add(new Localizacao("-25.412449", "-49.261879"));
+        add(new Localizacao("-25.412367", "-49.262437"));
+        add(new Localizacao("-25.412265", "-49.263027"));
+        add(new Localizacao("-25.412139", "-49.263703"));
+        add(new Localizacao("-25.411713", "-49.263746"));
+        add(new Localizacao("-25.411243", "-49.263832"));
+    }};
 
-        if (indice == localizacoesB.size()) indice = 0;
+    private List<Localizacao> localizacoesAtoB = new ArrayList<Localizacao>() {{
+        add(new Localizacao("-25.409407", "-49.264360"));
+        add(new Localizacao("-25.409780", "-49.264405"));
+        add(new Localizacao("-25.410526", "-49.264190"));
+        add(new Localizacao("-25.411243", "-49.263832"));
+        add(new Localizacao("-25.411713", "-49.263746"));
+        add(new Localizacao("-25.412139", "-49.263703"));
+        add(new Localizacao("-25.412529", "-49.263690"));
+        add(new Localizacao("-25.412839", "-49.263714"));
+        add(new Localizacao("-25.412752", "-49.264401"));
+        add(new Localizacao("-25.412720", "-49.264938"));
+        add(new Localizacao("-25.412633", "-49.265566"));
+        add(new Localizacao("-25.412535", "-49.265982"));
+        add(new Localizacao("-25.412438", "-49.266872"));
+    }};
 
-        vigilante.setLocalizacao(localizacoesB.get(indice));
+    private Localizacao setLocalizacao(Vigilante vigilante, List<Localizacao> localizacoes, boolean reverso) {
+        int indice;
+
+        if (reverso) {
+            indice = localizacoes.indexOf(vigilante.getLocalizacao()) - 1;
+            if (indice == localizacoes.size()) {
+                vigilante.setLocalizacao(localizacoesA.get(localizacoes.size() - 1));
+            }
+        } else {
+            indice = localizacoes.indexOf(vigilante.getLocalizacao()) + 1;
+            if (indice == localizacoes.size()) indice = 0;
+            vigilante.setLocalizacao(localizacoes.get(indice));
+        }
 
         service.editar(vigilante);
 
@@ -68,16 +109,38 @@ public class VigilanteController {
     }
 
     @RequestMapping("/vigilantes")
-    public ModelAndView criar() {
-        Vigilante vigilanteA = service.buscarPorId(1L);
-        Vigilante vigilanteB = service.buscarPorId(2L);
-
-        setLocalizacao(vigilanteA);
-        setLocalizacao(vigilanteB);
+    public ModelAndView buscar(String opcao) {
+        Vigilante vigilante = null;
+        switch (opcao) {
+            case "A":
+                vigilante = service.buscarPorId(1L);
+                setLocalizacao(vigilante, localizacoesA, false);
+                break;
+            case "B":
+                vigilante = service.buscarPorId(2L);
+                setLocalizacao(vigilante, localizacoesB, false);
+                break;
+            case "C":
+                vigilante = service.buscarPorId(3L);
+                setLocalizacao(vigilante, localizacoesC, false);
+                break;
+            case "AtoB":
+                vigilante = service.buscarPorId(1L);
+                setLocalizacao(vigilante, localizacoesAtoB, false);
+                break;
+        }
 
         return new ModelAndView("vigilantes")
-                .addObject("vigilanteA", vigilanteA)
-                .addObject("vigilanteB", vigilanteB);
+                .addObject("vigilante", vigilante);
+    }
+
+    @RequestMapping("/retornar")
+    public ModelAndView retornar() {
+        Vigilante vigilante = service.buscarPorId(1L);
+        setLocalizacao(vigilante, localizacoesAtoB, true);
+
+        return new ModelAndView("vigilantes")
+                .addObject("vigilante", vigilante);
     }
 
 }

@@ -5,18 +5,23 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="/resources/css/materialize.min.css"  media="screen,projection"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
         #map {
-            height: 550px;
+            height: 600px;
             width: 100%;
+        }
+        #chamar {
+            position: absolute;
+            bottom: 100px;
+            right: 50px;
         }
     </style>
 </head>
 
-<body>
+<body class="grey lighten-4">
 
     <div class="row purple darken-4" style="margin-bottom: 0;">
         <div class="col s12">
@@ -28,10 +33,29 @@
         </div>
     </div>
 
-    <div id="hist" class="col s12">Test 1</div>
+    <div id="hist" class="col s12">
+        <div class="row">
+            <div class="col s12">
+                <div class="card-panel">
+                    <div class="row">
+                        <div class="input-field col-12">
+                            <label for="icon_telephone">Data</label>
+                            <input type="date" class="datepicker">
+                            <button class="btn waves-effect waves-light right purple purple darken-4" type="submit" name="action" style="margin: 15px 0 20px;">Agendar
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="mapWrapper" class="row">
         <div id="map"></div>
+        <a class="btn-floating btn-large waves-effect waves-light purple darken-4" id="chamar">
+            <img src="/resources/img/logo.png" style="margin-top:10px;">
+        </a>
     </div>
 
     <div id="config" class="col s12">
@@ -101,7 +125,7 @@
                 center: centerLocal
             });
 
-            var m = new google.maps.Marker({
+            new google.maps.Marker({
                 position: centerLocal,
                 map: map,
                 icon: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
@@ -110,14 +134,32 @@
             var markers = {};
             var idA;
             var idB;
+            var idC;
 
-            setInterval(function() {
-                $.get("/vigilantes", function(data) {
+            var intervalA = setInterval(function() {
+                $.get("/vigilantes", { opcao: 'A' }, function(data) {
                     var markerA = markers[idA];
                     if (markerA != null) {
                         markerA.setMap(null);
                     }
 
+                    var obj = $.parseJSON(data);
+
+                    idA = "A";
+
+                    markerA = new google.maps.Marker({
+                        id: idA,
+                        position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
+                        map: map,
+                        icon: '/resources/img/vigilante.png'
+                    });
+
+                    markers[idA] = markerA;
+                });
+            }, 3000);
+
+            setInterval(function() {
+                $.get("/vigilantes", { opcao: 'B' }, function(data) {
                     var markerB = markers[idB];
                     if (markerB != null) {
                         markerB.setMap(null);
@@ -125,28 +167,131 @@
 
                     var obj = $.parseJSON(data);
 
-                    idA = "A";
                     idB = "B";
-
-                    markerA = new google.maps.Marker({
-                        id: idA,
-                        position: {lat: obj.vigilanteA.lat, lng: obj.vigilanteA.lng},
-                        map: map,
-                        icon: '/resources/img/vigilante.png'
-                    });
 
                     markerB = new google.maps.Marker({
                         id: idB,
-                        position: {lat: obj.vigilanteB.lat, lng: obj.vigilanteB.lng},
+                        position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
                         map: map,
                         icon: '/resources/img/vigilante.png'
                     });
 
-                    markers[idA] = markerA;
                     markers[idB] = markerB;
                 });
 
-            }, 3000);
+            }, 3500);
+
+            setInterval(function() {
+                $.get("/vigilantes", { opcao: 'C' }, function(data) {
+                    var markerC = markers[idC];
+                    if (markerC != null) {
+                        markerC.setMap(null);
+                    }
+
+                    var obj = $.parseJSON(data);
+
+                    idC = "C";
+
+                    markerC = new google.maps.Marker({
+                        id: idC,
+                        position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
+                        map: map,
+                        icon: '/resources/img/vigilante.png'
+                    });
+
+                    markers[idC] = markerC;
+                });
+
+            }, 4000);
+
+            $("#chamar").click(function() {
+                clearInterval(intervalA);
+                setInterval(function() {
+                    $.get("/vigilantes", { opcao: 'AtoB' }, function(data) {
+                        var markerA = markers[idA];
+                        if (markerA != null) {
+                            markerA.setMap(null);
+                        }
+
+                        var obj = $.parseJSON(data);
+
+                        idA = "A";
+
+                        markerA = new google.maps.Marker({
+                            id: idA,
+                            position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
+                            map: map,
+                            icon: '/resources/img/vigilante.png'
+                        });
+
+                        markers[idA] = markerA;
+
+                        if (obj.vigilante.lat == -25.412438) {
+                            retornar();
+                        }
+                    });
+                }, 3000);
+            });
+
+            function retornar() {
+                var intervaloRetorno = setInterval(function() {
+                    $.get("/retornar", function(data) {
+                        var markerA = markers[idA];
+                        if (markerA != null) {
+                            markerA.setMap(null);
+                        }
+
+                        var obj = $.parseJSON(data);
+
+                        idA = "A";
+
+                        markerA = new google.maps.Marker({
+                            id: idA,
+                            position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
+                            map: map,
+                            icon: '/resources/img/vigilante.png'
+                        });
+
+                        markers[idA] = markerA;
+
+                        if (obj.vigilante.lat == -25.409407 && obj.vigilante.lng == -49.264360) {
+                            corrigir();
+                        }
+                    });
+                }, 3000);
+            }
+
+            function corrigir() {
+                setInterval(function() {
+                    if (typeof intervaloRetorno != 'undefined') {
+                        clearInterval(intervaloRetorno);
+                    }
+                    $.get("/vigilantes", { opcao: 'A' }, function(data) {
+                        var markerA = markers[idA];
+                        if (markerA != null) {
+                            markerA.setMap(null);
+                        }
+
+                        var obj = $.parseJSON(data);
+
+                        idA = "A";
+
+                        markerA = new google.maps.Marker({
+                            id: idA,
+                            position: {lat: obj.vigilante.lat, lng: obj.vigilante.lng},
+                            map: map,
+                            icon: '/resources/img/vigilante.png'
+                        });
+
+                        markers[idA] = markerA;
+                    });
+                }, 3000);
+            }
+
+            $('.datepicker').pickadate({
+                selectMonths: true, // Creates a dropdown to control month
+                selectYears: 15 // Creates a dropdown of 15 years to control year
+            });
         }
     </script>
 </body>

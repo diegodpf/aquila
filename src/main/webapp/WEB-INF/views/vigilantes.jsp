@@ -4,12 +4,8 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 {
-    "vigilanteA": {
-        "lat": ${vigilanteA.localizacao.latitude},
-        "lng": ${vigilanteA.localizacao.longitude}
-    },
-    "vigilanteB": {
-        "lat": ${vigilanteB.localizacao.latitude},
-        "lng": ${vigilanteB.localizacao.longitude}
+    "vigilante": {
+        "lat": ${vigilante.localizacao.latitude},
+        "lng": ${vigilante.localizacao.longitude}
     }
 }

@@ -133,7 +133,6 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>boraprabalada</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
